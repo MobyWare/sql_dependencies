@@ -50,10 +50,32 @@ def extract_tables(sql):
 
 
 #%%
+##basic query
 sql = """
 select K.a,K.b from (select H.b from (select G.c from (select F.d from
 (select E.e from A, B, C, D, E), F), G), H), I, J, K order by 1,2;
 """
 
+#%%
+##complex query; joins and ctes
+## TODO - parsing CTE doesn't work. Also need a way to get table name not alias.
+sql = """
+with freq as (
+select
+    department_id
+from
+    employees e inner join departments d on d.department_id = e.department_id
+group by 1
+having
+    count(distinct e.employee_id) > 5000
+)
+select 
+    *
+from
+    employees e inner join freq f on f.department_id = d.department_id
+
+"""
+
 tables = ', '.join(extract_tables(sql))
 print('Tables: {}'.format(tables))
+# %%
